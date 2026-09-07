@@ -110,19 +110,7 @@
   {
     packages.${system} = septabee-pkgs;
 
-    apps.${system} = {
-      default = {
-        type = "app";
-        program = "${septabee-pkgs.default}/bin/septabee";
-        meta = meta;
-      };
-
-      xNoWayland = {
-        type = "app";
-        program = "${septabee-pkgs.xNoWayland}/bin/septabee";
-        meta = meta;
-      };
-    };
+    apps.${system} = pkgs.lib.mapAttrs (_: value: { inherit meta; type = "app"; program = "${value}/bin/septabee"; }) septabee-pkgs;
 
     nixosModules.${system}.default = { ... }: {
       security.wrappers.septabee = {
