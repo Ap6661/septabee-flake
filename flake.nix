@@ -19,31 +19,6 @@
       mainProgram = "septabee";
     };
 
-    depends = with pkgs; [
-      libpng
-      vulkan-loader
-      freetype
-      pipewire
-      libx11
-      stdenv.cc.cc.lib
-      lilv
-      zstd
-      ncurses
-    ];
-
-    waylandDepends = with pkgs; [
-      wayland
-      # kdePackages.wayland ## Not sure if this is a hard requirement. cannot test myself
-      libxkbcommon
-    ];
-
-    runtimeDependencies = with pkgs; [
-      pipewire
-      vulkan-loader
-    ];
-
-    version = "B_T5_offline";
-
     hashes = {
       "B_T1" = "sha256-JlWmeDnMTjBNwLTADvSswbtfhJK6t1bu0xHkmBgLtvA=";
       "B_T2" = "sha256-OMnbRBTku8yi4b3Ay7d70EbB/e2Qh+PfzK2O8qRFoaA=";
@@ -58,7 +33,11 @@
       sha256 = "sha256-eOi7RpU4niZoFjg3bw1NOYj9U96YxOr2TGj8d37D5FY=";
     };
 
-    septabee-pkg = pkgs.stdenv.mkDerivation {
+    septabee-pkg = {
+      wayland-deps ? true,
+      version ? "B_T5_offline"
+    }:
+    pkgs.stdenv.mkDerivation {
         name = "septabee-${version}";
         version = version;
         src = pkgs.fetchurl {
@@ -66,14 +45,31 @@
           sha256 = hashes.${version};
         };
 
-        runtimeDependencies = waylandDepends ++ runtimeDependencies; 
+        runtimeDependencies = with pkgs; [
+          pipewire
+          vulkan-loader
+        ] ++ (lib.optionals wayland-deps [
+          wayland
+          # kdePackages.wayland # Not sure if this is a hard requirement. cannot test myself
+          libxkbcommon
+        ]);
 
         nativeBuildInputs = with pkgs; [
           p7zip
           autoPatchelfHook
         ];
 
-        buildInputs = depends;
+        buildInputs = with pkgs; [
+          libpng
+          vulkan-loader
+          freetype
+          pipewire
+          libx11
+          stdenv.cc.cc.lib
+          lilv
+          zstd
+          ncurses
+        ];
 
         unpackPhase = ''
           runHook preUnpack
@@ -108,29 +104,15 @@
         meta = meta;
     };
 
-    septabeeXNoWayland = septabee-pkg.overrideAttrs {
-      runtimeDependencies = runtimeDependencies;
+    septabee-pkgs = {
+      default = pkgs.callPackage septabee-pkg {};
+      xNoWayland = pkgs.callPackage septabee-pkg { wayland-deps = false; };
     };
   in
   {
-    packages.${system} = {
-      default = septabee-pkg;
-      xNoWayland = septabeeXNoWayland;
-    };
+    packages.${system} = septabee-pkgs;
 
-    apps.${system} = {
-      default = {
-        type = "app";
-        program = "${septabee-pkg}/bin/septabee";
-        meta = meta;
-      };
-
-      xNoWayland = {
-        type = "app";
-        program = "${septabeeXNoWayland}/bin/septabee";
-        meta = meta;
-      };
-    };
+    apps.${system} = pkgs.lib.mapAttrs (_: value: { inherit meta; type = "app"; program = "${value}/bin/septabee"; }) septabee-pkgs;
 
     nixosModules.${system}.default = { ... }: {
       security.wrappers.septabee = {
@@ -138,7 +120,7 @@
         group = "root";
         permissions = "u-rwx,g=rx,o=rx";
         capabilities = "cap_sys_nice+ep";
-        source = "${septabee-pkg}/bin/septabee";
+        source = "${septabee-pkgs.default}/bin/septabee";
       };
 
       security.wrappers.septabee-sounds = {
@@ -146,7 +128,7 @@
         group = "root";
         permissions = "u-rwx,g=rx,o=rx";
         capabilities = "cap_sys_nice+ep";
-        source = "${septabee-pkg}/bin/septabee-sounds";
+        source = "${septabee-pkgs.default}/bin/septabee-sounds";
       };
     };
   };
