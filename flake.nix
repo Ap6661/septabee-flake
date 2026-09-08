@@ -24,6 +24,8 @@
       "B_T2" = "sha256-OMnbRBTku8yi4b3Ay7d70EbB/e2Qh+PfzK2O8qRFoaA=";
       "B_T3" = "sha256-vdXJ4Qusvi/ehztmp2iibiFZLJvbU7+mRnR7KSmxrFA=";
       "B_T4" = "sha256-Uuu3g11TCczOSDx15AqEJTosPkPjBNaWjBAPFf8uNw8=";
+      "B_T5" = "sha256-dBEdBy8PChrAxiTLYoIdOqTg77UsTGoogKhV1o6eiAk=";
+      "B_T5_offline" = "sha256-+c8RUdz1EIPhubxDFYfhnevQN0v4cRKDQ2bcRmLn4sk=";
     };
 
     icon = pkgs.fetchurl {
@@ -33,7 +35,7 @@
 
     septabee-pkg = {
       wayland-deps ? true,
-      version ? "B_T4"
+      version ? "B_T5_offline"
     }:
     pkgs.stdenv.mkDerivation {
         name = "septabee-${version}";
