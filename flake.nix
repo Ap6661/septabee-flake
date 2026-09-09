@@ -31,8 +31,8 @@
     };
 
     icon = pkgs.fetchurl {
-      url = "https://septabee.nekoweb.org/important_stuff/septabee.png";
-      sha256 = "sha256-eOi7RpU4niZoFjg3bw1NOYj9U96YxOr2TGj8d37D5FY=";
+      url = "https://septabee.nekoweb.org/important_stuff/icon.png";
+      sha256 = "sha256-snq/nOYU2gPzC4VR558VjeQ8oXmQE82IolNDDixvtTU=";
     };
 
     septabee-pkg = {
