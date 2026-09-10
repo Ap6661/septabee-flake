@@ -37,9 +37,11 @@
       sha256 = "sha256-snq/nOYU2gPzC4VR558VjeQ8oXmQE82IolNDDixvtTU=";
     };
 
+    latest_offline = "B_T7_offline";
+
     septabee-pkg = {
       wayland-deps ? true,
-      version ? "B_T7_offline"
+      version ? latest_offline
     }:
     pkgs.stdenv.mkDerivation {
         name = "septabee-${version}";
@@ -118,22 +120,54 @@
 
     apps.${system} = pkgs.lib.mapAttrs (_: value: { inherit meta; type = "app"; program = "${value}/bin/septabee"; }) septabee-pkgs;
 
-    nixosModules.${system}.default = { ... }: {
-      security.wrappers.septabee = {
-        owner = "root";
-        group = "root";
-        permissions = "u-rwx,g=rx,o=rx";
-        capabilities = "cap_sys_nice+ep";
-        source = "${septabee-pkgs.default}/bin/septabee";
+    nixosModules.${system}.default = { lib, config, ... }: 
+    let
+      cfg = config.programs.septabee;
+    in
+    {
+
+      options = {
+        programs.septabee = {
+          enable = lib.mkEnableOption "S E P T A B E E";
+          version = lib.mkOption {
+            type = lib.types.str;
+            default = latest_offline;
+            example = builtins.attrNames hashes;
+          };
+          wayland-deps = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+          };
+          package = lib.mkOption {
+            type = lib.types.package;
+            default = septabee-pkg {
+              wayland-deps = cfg.wayland-deps;
+              version = cfg.version;
+            };
+          };
+        };
       };
 
-      security.wrappers.septabee-sounds = {
-        owner = "root";
-        group = "root";
-        permissions = "u-rwx,g=rx,o=rx";
-        capabilities = "cap_sys_nice+ep";
-        source = "${septabee-pkgs.default}/bin/septabee-sounds";
+      config = lib.mkIf cfg.enable {
+        environment.systemPackages = [ cfg.package ];
+
+        security.wrappers.septabee = {
+          owner = "root";
+          group = "root";
+          permissions = "u-rwx,g=rx,o=rx";
+          capabilities = "cap_sys_nice+ep";
+          source = "${cfg.package}/bin/septabee";
+        };
+
+        security.wrappers.septabee-sounds = {
+          owner = "root";
+          group = "root";
+          permissions = "u-rwx,g=rx,o=rx";
+          capabilities = "cap_sys_nice+ep";
+          source = "${cfg.package}/bin/septabee-sounds";
+        };
       };
+      
     };
   };
 }

@@ -1,13 +1,13 @@
 ```nix
-# Realtime Thread Priority 
-imports = [ inputs.septabee.nixosModules.x86_64-linux.default ];
 
-# Actually install the package
-environment.systemPackages = [ inputs.septabee.packages.x86_64-linux.default ];
+imports = [
+    inputs.septabee.nixosModules.x86_64-linux.default
+];
 
-# Optionally say no to wayland
-environment.systemPackages = [ inputs.septabee.packages.x86_64-linux.xNoWayland ];
+programs.septabee = {
+    enable = true; # Install and enable realtime thread priority
+    wayland-deps = false; # Don't install wayland dependencies
+    version = "B_T7_offline"; # Default is latest
+};
 
-# Install a previous version
-environment.systemPackages = [ (inputs.septabee.packages.x86_64-linux.default.override { version = "B_T3"; }) ];
 ```
