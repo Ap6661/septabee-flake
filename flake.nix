@@ -107,7 +107,7 @@
 
     apps.${system} = pkgs.lib.mapAttrs (_: value: { inherit meta; type = "app"; program = "${value}/bin/septabee"; }) septabee-pkgs;
 
-    nixosModules.${system}.default = { lib, config, ... }: 
+    nixosModules.default = { lib, config, ... }: 
     let
       cfg = config.programs.septabee;
     in
