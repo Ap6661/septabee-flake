@@ -6,8 +6,8 @@ imports = [
 
 programs.septabee = {
     enable = true; # Install and enable realtime thread priority
-    wayland-deps = false; # Don't install wayland dependencies
-    version = "B_T7_offline"; # Default is latest
+    wayland-deps = true; # Install wayland dependencies (default)
+    version = "latest_offline"; # Default is latest_offline (default)
 };
 
 ```
