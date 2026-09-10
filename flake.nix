@@ -118,8 +118,8 @@
           enable = lib.mkEnableOption "S E P T A B E E";
           version = lib.mkOption {
             type = lib.types.str;
-            default = version-list.latest_offline;
-            example = builtins.attrNames version-list.hashes;
+            default = "latest_offline";
+            example = [ "latest" "latest_offline" ] ++ (builtins.attrNames version-list.hashes);
           };
           wayland-deps = lib.mkOption {
             type = lib.types.bool;
@@ -129,7 +129,15 @@
             type = lib.types.package;
             default = septabee-pkg {
               wayland-deps = cfg.wayland-deps;
-              version = cfg.version;
+              version = 
+                if cfg.version == "latest" 
+                then 
+                  version-list.latest
+                else if cfg.version == "latest_offline" 
+                then 
+                  version-list.latest_offline
+                else
+                  cfg.version;
             };
           };
         };
