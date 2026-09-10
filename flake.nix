@@ -19,36 +19,23 @@
       mainProgram = "septabee";
     };
 
-    hashes = {
-      "B_T1" = "sha256-JlWmeDnMTjBNwLTADvSswbtfhJK6t1bu0xHkmBgLtvA=";
-      "B_T2" = "sha256-OMnbRBTku8yi4b3Ay7d70EbB/e2Qh+PfzK2O8qRFoaA=";
-      "B_T3" = "sha256-vdXJ4Qusvi/ehztmp2iibiFZLJvbU7+mRnR7KSmxrFA=";
-      "B_T4" = "sha256-Uuu3g11TCczOSDx15AqEJTosPkPjBNaWjBAPFf8uNw8=";
-      "B_T5" = "sha256-dBEdBy8PChrAxiTLYoIdOqTg77UsTGoogKhV1o6eiAk=";
-      "B_T5_offline" = "sha256-+c8RUdz1EIPhubxDFYfhnevQN0v4cRKDQ2bcRmLn4sk=";
-      "B_T6" = "sha256-tkBRI8GcpOjtZs9sA0ycIPeq6eaFjDVH2YBfTXl7Leo=";
-      "B_T6_offline" = "sha256-f2oR3nxSrBZHPhPN0eWWZlbFSQa34EWBEDyQmoRjvAA=";
-      "B_T7" = "sha256-+BRkf4TrJZqCjnQmUg0sMoJTsmnSyXiXNovTKo72k54=";
-      "B_T7_offline" = "sha256-tVxMALnZewmrKTWnn5C0mNmvfM84scScbwGl0Hfk+LA=";
-    };
+    version-list = import ./versions.nix;
 
     icon = pkgs.fetchurl {
       url = "https://septabee.nekoweb.org/important_stuff/icon.png";
       sha256 = "sha256-snq/nOYU2gPzC4VR558VjeQ8oXmQE82IolNDDixvtTU=";
     };
 
-    latest_offline = "B_T7_offline";
-
     septabee-pkg = {
       wayland-deps ? true,
-      version ? latest_offline
+      version ? version-list.latest_offline
     }:
     pkgs.stdenv.mkDerivation {
         name = "septabee-${version}";
         version = version;
         src = pkgs.fetchurl {
           url = "https://septabee.nekoweb.org/important_stuff/SEPTABEE_DOWNLOADS/version_B/septabee_linux_${version}.7z";
-          sha256 = hashes.${version};
+          sha256 = version-list.hashes.${version};
         };
 
         runtimeDependencies = with pkgs; [
@@ -131,8 +118,8 @@
           enable = lib.mkEnableOption "S E P T A B E E";
           version = lib.mkOption {
             type = lib.types.str;
-            default = latest_offline;
-            example = builtins.attrNames hashes;
+            default = "latest_offline";
+            example = [ "latest" "latest_offline" ] ++ (builtins.attrNames version-list.hashes);
           };
           wayland-deps = lib.mkOption {
             type = lib.types.bool;
@@ -142,7 +129,15 @@
             type = lib.types.package;
             default = septabee-pkg {
               wayland-deps = cfg.wayland-deps;
-              version = cfg.version;
+              version = 
+                if cfg.version == "latest" 
+                then 
+                  version-list.latest
+                else if cfg.version == "latest_offline" 
+                then 
+                  version-list.latest_offline
+                else
+                  cfg.version;
             };
           };
         };
