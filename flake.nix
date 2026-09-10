@@ -128,20 +128,24 @@
               enable = lib.mkEnableOption "S E P T A B E E";
               version = lib.mkOption {
                 type = lib.types.enum (
-                  [
-                    "latest"
-                    "latest_offline"
-                  ]
-                  ++ (builtins.attrNames version-list.hashes)
+                  [ "latest" ]
+                  ++ (builtins.filter (name: !(lib.strings.hasSuffix "_offline" name)) (
+                    builtins.attrNames version-list.hashes
+                  ))
                 );
-                default = "latest_offline";
+                default = "latest";
                 example = [
                   "latest"
-                  "latest_offline"
                 ]
-                ++ (builtins.attrNames version-list.hashes);
+                ++ (builtins.filter (name: !(lib.strings.hasSuffix "_offline" name)) (
+                  builtins.attrNames version-list.hashes
+                ));
               };
               wayland-deps = lib.mkOption {
+                type = lib.types.bool;
+                default = true;
+              };
+              offline = lib.mkOption {
                 type = lib.types.bool;
                 default = true;
               };
@@ -150,12 +154,13 @@
                 default = septabee-pkg {
                   wayland-deps = cfg.wayland-deps;
                   version =
+                    let
+                      offline-suffix = if cfg.offline then "_offline" else "";
+                    in
                     if cfg.version == "latest" then
-                      version-list.latest
-                    else if cfg.version == "latest_offline" then
-                      version-list.latest_offline
+                      "${version-list.latest}${offline-suffix}"
                     else
-                      cfg.version;
+                      "${cfg.version}${offline-suffix}";
                 };
               };
             };
