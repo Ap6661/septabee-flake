@@ -98,7 +98,7 @@
                 "Music"
                 "Midi"
             ];
-            desktopName = "Septabee DAW";
+            desktopName = "S e p t a b e e";
             genericName = "Septabee Digital Audio Workstation";
           })
         ];
