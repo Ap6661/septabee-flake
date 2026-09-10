@@ -110,17 +110,34 @@
     nixosModules.default = { lib, config, ... }: 
     let
       cfg = config.programs.septabee;
+      effective_version = 
+        (if cfg.version == "latest" then version-list.latest else cfg.version) + 
+        (if cfg.offline then "_offline" else "");
     in
     {
 
       options = {
         programs.septabee = {
           enable = lib.mkEnableOption "S E P T A B E E";
-          version = lib.mkOption {
-            type = lib.types.enum ([ "latest" "latest_offline" ] ++ (builtins.attrNames version-list.hashes));
-            default = "latest_offline";
-            example = [ "latest" "latest_offline" ] ++ (builtins.attrNames version-list.hashes);
+
+          version = 
+          let 
+            validVersions = [ "latest" ] ++ 
+            (builtins.filter (name: !(lib.strings.hasSuffix "_offline" name)) (
+                builtins.attrNames version-list.hashes
+                ));
+          in
+          lib.mkOption {
+            type = lib.types.enum validVersions;
+            default = "latest";
+            example = validVersions;
           };
+
+          offline = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+          };
+
           wayland-deps = lib.mkOption {
             type = lib.types.bool;
             default = true;
@@ -129,21 +146,19 @@
             type = lib.types.package;
             default = septabee-pkg {
               wayland-deps = cfg.wayland-deps;
-              version = 
-                if cfg.version == "latest" 
-                then 
-                  version-list.latest
-                else if cfg.version == "latest_offline" 
-                then 
-                  version-list.latest_offline
-                else
-                  cfg.version;
+              version = effective_version;
             };
           };
         };
       };
 
       config = lib.mkIf cfg.enable {
+
+        assertions = [{
+          assertion = (builtins.hasAttr effective_version version-list.hashes);
+          message = "Septabee does not supply an offline version for ${cfg.version}";
+        }];
+
         environment.systemPackages = [ cfg.package ];
 
         security.wrappers.septabee = {
