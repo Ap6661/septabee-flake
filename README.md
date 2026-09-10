@@ -1,13 +1,17 @@
 ```nix
 
 imports = [
-    inputs.septabee.nixosModules.x86_64-linux.default
+    inputs.septabee.nixosModules.default
 ];
 
+# Septabee's options and their defaults
 programs.septabee = {
-    enable = true; # Install and enable realtime thread priority
-    wayland-deps = true; # Install wayland dependencies (default)
-    version = "latest_offline"; # Default is latest_offline (default)
+    enable = false; 
+    wayland-deps = true; # Install wayland only dependencies 
+    version = "latest"; # like [ "latest" "B_T1" "B_T2" ... ]
+    offline = true; # Doesn't require downloading LLVM stuff
+
+    package = pkgs.septabee # Septabee of version + wayland-deps
 };
 
 ```
