@@ -120,6 +120,16 @@
         { lib, config, ... }:
         let
           cfg = config.programs.septabee;
+
+          make-version-string =
+            version: offline:
+            let
+              offline-suffix = if offline then "_offline" else "";
+            in
+            if version == "latest" then
+              "${version-list.latest}${offline-suffix}"
+            else
+              "${version}${offline-suffix}";
         in
         {
 
@@ -153,20 +163,25 @@
                 type = lib.types.package;
                 default = septabee-pkg {
                   wayland-deps = cfg.wayland-deps;
-                  version =
-                    let
-                      offline-suffix = if cfg.offline then "_offline" else "";
-                    in
-                    if cfg.version == "latest" then
-                      "${version-list.latest}${offline-suffix}"
-                    else
-                      "${cfg.version}${offline-suffix}";
+                  version = make-version-string cfg.version cfg.offline;
                 };
               };
             };
           };
 
           config = lib.mkIf cfg.enable {
+            assertions = [
+              {
+                assertion = lib.traceValSeq (
+                  !(version-list.hashes.${make-version-string cfg.version cfg.offline} or null == null)
+                );
+                message = ''
+                  Version ${cfg.version} does not have an offline install, 
+                  please set `programs.septabee.offline = false;` or choose a different version.
+                '';
+              }
+            ];
+
             environment.systemPackages = [ cfg.package ];
 
             security.wrappers.septabee = {
