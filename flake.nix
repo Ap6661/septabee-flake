@@ -117,7 +117,7 @@
         programs.septabee = {
           enable = lib.mkEnableOption "S E P T A B E E";
           version = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.enum ([ "latest" "latest_offline" ] ++ (builtins.attrNames version-list.hashes));
             default = "latest_offline";
             example = [ "latest" "latest_offline" ] ++ (builtins.attrNames version-list.hashes);
           };
