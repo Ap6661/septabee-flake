@@ -105,7 +105,20 @@
       septabee-pkgs = {
         default = pkgs.callPackage septabee-pkg { };
         xNoWayland = pkgs.callPackage septabee-pkg { wayland-deps = false; };
-      };
+      }
+      // pkgs.lib.mapAttrs' (name: value: {
+        name = "septabee-${name}";
+        value = septabee-pkg {
+          version = name;
+        };
+      }) version-list.hashes
+      // pkgs.lib.mapAttrs' (name: value: {
+        name = "septabee-${name}-xNoWayland";
+        value = septabee-pkg {
+          version = name;
+          wayland-deps = false;
+        };
+      }) version-list.hashes;
     in
     {
       packages.${system} = septabee-pkgs;
