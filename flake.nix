@@ -181,7 +181,7 @@
 
             assertions = [
               {
-                assertion = (builtins.hasAttr cfg.version version-list.hashes);
+                assertion = (builtins.hasAttr cfg.version version-list.hashes) || cfg.version == "latest";
                 message = "Septabee ${cfg.version} does not exist";
               }
               {
