@@ -181,6 +181,10 @@
 
             assertions = [
               {
+                assertion = (builtins.hasAttr cfg.version version-list.hashes);
+                message = "Septabee ${cfg.version} does not exist";
+              }
+              {
                 assertion = (builtins.hasAttr effective_version version-list.hashes);
                 message = "Septabee does not supply an offline version for ${cfg.version}";
               }
