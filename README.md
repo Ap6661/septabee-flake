@@ -11,7 +11,7 @@ programs.septabee = {
     version = "latest"; # like [ "latest" "B_T1" "B_T2" ... ]
     offline = true; # Doesn't require downloading LLVM stuff
 
-    package = pkgs.septabee # Septabee of version + wayland-deps
+    package = pkgs.septabee; # Septabee of version + wayland-deps
 };
 
 ```
