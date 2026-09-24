@@ -1,5 +1,5 @@
 
-if [[ $# != 1 ]]; then
+if [[ $# -lt 1 ]]; then
   echo "Missing Version"
   echo $#
   exit 1
@@ -36,3 +36,15 @@ sed ./versions.nix -e "3i \ \ latest_offline = \"$Vo\";" -i
 
 # Show your changes
 cat ./versions.nix
+
+if [[ $# == 2 ]]; then
+  echo Building... 
+  nix build ".#septabee-$V" -o online
+  nix build ".#septabee-$Vo" -o offline
+
+  echo Testing Onine Version... 
+  ./online/bin/septabee
+
+  echo Testing Offline Version... 
+  ./offline/bin/septabee
+fi
