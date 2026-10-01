@@ -1,8 +1,10 @@
 {
-  latest = "B_T16";
-  latest_offline = "B_T16_offline";
+  latest = "B_T17";
+  latest_offline = "B_T17_offline";
 
   hashes = {
+    "B_T17" = "sha256-64mBbfy7QuW1vf69RPS3U8L9wzHdGYwxQ/QoCgunNVY=";
+    "B_T17_offline" = "sha256-RjeJ+gPc32NFye+kaCcpvnTwC7u8QxH39Fl+DuomhBU=";
     "B_T16" = "sha256-L7GE0iFFSplVqymRvWkCjNadl1XVn8e3mpjsS1Y0Crs=";
     "B_T16_offline" = "sha256-1cimDVeFf/DODIi1qamUKhKrze8/ReceK/iUHqlpKuM=";
     "B_T15" = "sha256-+LE0Ukl2Mz2KIbe/ykM8GXTSlDFpyrB35hN3lIKcbnM=";
