@@ -9,11 +9,11 @@ V=$1;
 Vo=$V"_offline";
 
 NORMAL=$(nix-prefetch-url \
-  "https://septabee.nekoweb.org/important_stuff/SEPTABEE_DOWNLOADS/version_B/septabee_linux_$V.7z" \
+  "https://downloads.septabee.com/SEPTABEE_DOWNLOADS/septabee_linux_$V.7z" \
   --type sha256 2> /dev/null | xargs nix-hash --type sha256 --to-base64)
 
 OFFLINE=$(nix-prefetch-url \
-  "https://septabee.nekoweb.org/important_stuff/SEPTABEE_DOWNLOADS/version_B/septabee_linux_$Vo.7z" \
+  "https://downloads.septabee.com/SEPTABEE_DOWNLOADS/septabee_linux_$Vo.7z" \
   --type sha256 2> /dev/null | xargs nix-hash --type sha256 --to-base64)
 
 # echo $NORMAL
