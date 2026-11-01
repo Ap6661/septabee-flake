@@ -36,7 +36,7 @@
           name = "septabee-${version}";
           version = version;
           src = pkgs.fetchurl {
-            url = "https://septabee.nekoweb.org/important_stuff/SEPTABEE_DOWNLOADS/version_B/septabee_linux_${version}.7z";
+            url = "https://downloads.septabee.com/SEPTABEE_DOWNLOADS/septabee_linux_${version}.7z";
             sha256 = version-list.hashes.${version};
           };
 
