@@ -40,6 +40,8 @@
             sha256 = version-list.hashes.${version};
           };
 
+          dontStrip = true;
+
           runtimeDependencies =
             with pkgs;
             [
@@ -55,6 +57,7 @@
           nativeBuildInputs = with pkgs; [
             p7zip
             autoPatchelfHook
+            makeWrapper
           ];
 
           buildInputs = with pkgs; [
@@ -81,6 +84,19 @@
             cp -r ./linux/* "$out/bin/"
             cp -r "$desktopItems/share" "$out"
             runHook postInstall
+          '';
+
+          postFixup = ''
+            wrapProgram "$out/bin/septabee" \
+              --set SEPTABEE_LINK_THINGY \
+                "$(cat "$NIX_CC/nix-support/dynamic-linker")" \
+              --set SEPTABEE_LIBRARBY \
+                "${pkgs.lib.makeLibraryPath (with pkgs; [ 
+                    stdenv.cc.cc.lib
+                    libx11
+                    pipewire
+                    vulkan-loader
+                ])}"
           '';
 
           desktopItems = [
