@@ -96,7 +96,10 @@
                     libx11
                     pipewire
                     vulkan-loader
-                ])}"
+                ] ++ (lib.optionals wayland-deps [
+                    wayland
+                    libxkbcommon
+                ]))}"
           '';
 
           desktopItems = [
