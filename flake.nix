@@ -57,7 +57,7 @@
           nativeBuildInputs = with pkgs; [
             p7zip
             autoPatchelfHook
-            makeWrapper
+            makeBinaryWrapper
           ];
 
           buildInputs = with pkgs; [
@@ -214,14 +214,6 @@
               permissions = "u-rwx,g=rx,o=rx";
               capabilities = "cap_sys_nice+ep";
               source = "${cfg.package}/bin/septabee";
-            };
-
-            security.wrappers.septabee-sounds = {
-              owner = "root";
-              group = "root";
-              permissions = "u-rwx,g=rx,o=rx";
-              capabilities = "cap_sys_nice+ep";
-              source = "${cfg.package}/bin/septabee-sounds";
             };
           };
 
