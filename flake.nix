@@ -91,12 +91,21 @@
               --set SEPTABEE_LINK_THINGY \
                 "$(cat "$NIX_CC/nix-support/dynamic-linker")" \
               --set SEPTABEE_LIBRARBY \
-                "${pkgs.lib.makeLibraryPath (with pkgs; [ 
-                    stdenv.cc.cc.lib
-                    libx11
-                    pipewire
-                    vulkan-loader
-                ])}"
+                "${
+                  pkgs.lib.makeLibraryPath (
+                    with pkgs;
+                    [
+                      stdenv.cc.cc.lib
+                      libx11
+                      pipewire
+                      vulkan-loader
+                    ]
+                    ++ lib.optionals wayland-deps [
+                      wayland
+                      libxkbcommon
+                    ]
+                  )
+                }"
           '';
 
           desktopItems = [
